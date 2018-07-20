@@ -43,9 +43,29 @@ public class GetRouterIPAddress extends CordovaPlugin {
 	}
 
 	private String getRouterIPAddress() {
-		WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
-		DhcpInfo dhcp = wifiManager.getDhcpInfo();
-		int ip = dhcp.gateway;
-		return formatIP(ip);
+		// WifiManager wifiManager = (WifiManager) cordova.getActivity().getSystemService(Context.WIFI_SERVICE);
+		// DhcpInfo dhcp = wifiManager.getDhcpInfo();
+		// int ip = dhcp.gateway;
+		// return formatIP(ip);
+		try {  
+	            for (Enumeration<NetworkInterface> en = NetworkInterface  
+	                            .getNetworkInterfaces(); en.hasMoreElements();) {  
+	                    NetworkInterface intf = en.nextElement(); 
+	                    if (intf.getName().toLowerCase().equals("eth0") || intf.getName().toLowerCase().equals("wlan0")) {   
+	                    for (Enumeration<InetAddress> enumIpAddr = intf  
+	                                    .getInetAddresses(); enumIpAddr.hasMoreElements();) {  
+	                            InetAddress inetAddress = enumIpAddr.nextElement();  
+	                            if (!inetAddress.isLoopbackAddress()) { 
+	                            	if(!(inetAddress.getHostAddress().toString()).contains("::")){//ipV6
+	                                    return inetAddress.getHostAddress().toString(); 
+	                                  } 
+	                            }  
+	                    } 
+	                  } 
+	            }  
+	    } catch (SocketException ex) {  
+	            System.out.println("WifiPreference IpAddress"+ex.toString());  
+	    }  
+	    return null; 
 	}
 }
