@@ -14,6 +14,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.provider.Settings;
 
+import java.net.InetAddress;  
+import java.net.NetworkInterface;  
+import java.net.SocketException;
+import java.util.Enumeration; 
+
 public class GetRouterIPAddress extends CordovaPlugin {
 
 	@Override
