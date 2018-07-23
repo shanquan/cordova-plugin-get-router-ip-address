@@ -23,18 +23,21 @@ public class GetRouterIPAddress extends CordovaPlugin {
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-		try {
-			String ip = getRouterIPAddress();
-			if (ip.equals("0.0.0.0")) {
-				callbackContext.error("No valid IP address");
-				return false;
+		if(action.equals("getMacAddress")){
+			try {
+				String ip = getRouterIPAddress();
+				if (ip==null||ip.equals("0.0.0.0")) {
+					callbackContext.error("No valid IP address");
+					return true;
+				}
+				callbackContext.success(ip);
+				return true;
+			} catch(Exception e) {
+				callbackContext.error("Error while retrieving the IP address. " + e.getMessage());
+				return true;
 			}
-			callbackContext.success(ip);
-			return true;
-		} catch(Exception e) {
-			callbackContext.error("Error while retrieving the IP address. " + e.getMessage());
-			return false;
 		}
+		return false;
 	}
 
 	private String formatIP(int ip) {
@@ -60,10 +63,8 @@ public class GetRouterIPAddress extends CordovaPlugin {
 	                    for (Enumeration<InetAddress> enumIpAddr = intf  
 	                                    .getInetAddresses(); enumIpAddr.hasMoreElements();) {  
 	                            InetAddress inetAddress = enumIpAddr.nextElement();  
-	                            if (!inetAddress.isLoopbackAddress()) { 
-	                            	if(!(inetAddress.getHostAddress().toString()).contains("::")){//ipV6
-	                                    return inetAddress.getHostAddress().toString(); 
-	                                  } 
+	                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) { 
+	                            	return inetAddress.getHostAddress().toString(); 
 	                            }  
 	                    } 
 	                  } 
